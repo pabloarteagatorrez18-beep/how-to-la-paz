@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 
 const IMG = {
-  hero: "https://images.unsplash.com/photo-1641736047534-afd0c9014a7c?auto=format&fit=crop&w=2200&q=90",
+  hero: "/hero-lapaz.jpg",
   city: "https://static.wixstatic.com/media/108ff4_d5558958600c4c2ca93334fa0a1c80ad~mv2.jpg/v1/fill/w_1800,h_1100,al_c,q_90/108ff4_d5558958600c4c2ca93334fa0a1c80ad~mv2.jpg",
-  food: "https://image-worker.mindtrip.ai/image-resize/format%3Dwebp%2Cw%3D1200/https%3A/images.mindtrip.ai/attractions/a8b7/c813/6281/2b33/1bc1/6a35/be41/e3ab",
+  food: "/food-saltenas.jpg",
   street: "https://www.the-wanderlusters.com/wp-content/uploads/2015/04/La-Paz-Shopping-Street-Bolivia-Wanderlusters-750x500.jpg",
   cable: "https://conteudo.imguol.com.br/c/entretenimento/70/2021/12/28/teleferico-em-la-paz-bolivia-1640722639064_v2_4x3.jpg",
   hills: "https://d2xsxph8kpxj0f.cloudfront.net/310519663145625555/4ZktLNxQHgJReWe7Bns4zn/images/la-paz-sehenswuerdigkeiten.webp",
@@ -52,8 +52,7 @@ export default function Home() {
 
       <section className="hero" id="inicio">
         <div className="hero-image"><img src={IMG.hero} alt="Teleférico sobre La Paz con el Illimani al fondo" /></div>
-        <div className="hero-copy reveal">
-          <p className="micro">LA CIUDAD DESDE ADENTRO</p>
+        <div className="hero-copy">
           <h1>Descubre<br />La Paz<br />como un paceño</h1>
           <p>Historias, lugares y experiencias para vivir una ciudad más increíble de lo que imaginas.</p>
           <a className="orange-button" href="#lo-ultimo">Explorar La Paz <span>→</span></a>
