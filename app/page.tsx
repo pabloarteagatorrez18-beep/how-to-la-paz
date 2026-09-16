@@ -17,17 +17,27 @@ const stories = [
   { tag: "Guía", title: "Qué hacer en La Paz este fin de semana", text: "Una agenda para vivir la ciudad a tu ritmo.", image: IMG.street },
 ];
 
-const districts = [
-  ["Sopocachi", "Cafés, cultura y vida urbana.", IMG.street],
-  ["Centro", "Historia, comercio y movimiento.", IMG.city],
-  ["El Alto", "Feria, horizonte y potencia.", IMG.cable],
-  ["Zona Sur", "Otra forma de vivir la ciudad.", IMG.hills],
+const zones = [
+  { id: "centro", name: "Centro histórico", shortName: "Centro", label: "Historia & movimiento", description: "Agrupa el Casco Viejo, San Francisco y las calles donde conviven memoria, comercio, política y vida cotidiana. El mejor punto para comenzar caminando.", highlights: ["Mercado Lanza", "Calle Jaén", "San Francisco"], image: IMG.street, x: 43, y: 31 },
+  { id: "sopocachi", name: "Sopocachi + San Jorge", shortName: "Sopocachi", label: "Cultura & cafés", description: "Una zona para encontrarse: casas antiguas, proyectos culturales, cocinas pequeñas, plazas y una vida nocturna con identidad propia.", highlights: ["El Montículo", "Sánchez Lima", "Plaza Abaroa"], image: IMG.city, x: 35, y: 48 },
+  { id: "miraflores", name: "Miraflores", shortName: "Miraflores", label: "Arquitectura & memoria", description: "Entre patrimonio, estadios y grandes avenidas, Miraflores muestra una La Paz moderna que todavía conversa con su historia.", highlights: ["Estadio Hernando Siles", "Plaza Villarroel", "Templete"], image: IMG.hills, x: 61, y: 46 },
+  { id: "sur", name: "Zona Sur", shortName: "Zona Sur", label: "Valle & nuevos ritmos", description: "Agrupa Obrajes, Calacoto, San Miguel y las rutas hacia Mallasa. Más abajo cambian el clima, el paisaje y la escala de la ciudad.", highlights: ["Obrajes", "San Miguel", "Valle de la Luna"], image: IMG.hero, x: 67, y: 75 },
+];
+
+const pillars = [
+  ["01", "Descubre", "Barrios, mercados y lugares que todavía se cuentan de boca en boca.", "#descubre"],
+  ["02", "Saborea", "Cocina, caseritas, rituales y las historias que viven alrededor de una mesa.", "#saborea"],
+  ["03", "Conecta", "Las personas, oficios y proyectos que están transformando la ciudad.", "#conecta"],
+  ["04", "Pertenece", "Memoria, identidad y las muchas maneras de llamar hogar a Bolivia.", "#pertenece"],
+  ["05", "Vive", "Encuentros pequeños y experiencias creadas desde la comunidad.", "#vive"],
 ];
 
 function SearchIcon() { return <span className="search-icon" aria-hidden="true" />; }
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeZoneId, setActiveZoneId] = useState(zones[0].id);
+  const activeZone = zones.find((zone) => zone.id === activeZoneId) ?? zones[0];
 
   useEffect(() => {
     const io = new IntersectionObserver((entries) => entries.forEach((entry) => {
@@ -42,7 +52,7 @@ export default function Home() {
       <header className="header">
         <a className="logo" href="#inicio" aria-label="How To La Paz, inicio"><img src="/how-to-la-paz.png" alt="How To La Paz" /></a>
         <nav className={menuOpen ? "desktop-nav open" : "desktop-nav"} aria-label="Navegación principal">
-          {['Explora', 'Noticias', 'Guía de barrios', 'Eventos', 'Sobre La Paz'].map((item) => <a href="#" key={item} onClick={() => setMenuOpen(false)}>{item}</a>)}
+          {pillars.map(([, item, , href]) => <a href={href} key={item} onClick={() => setMenuOpen(false)}>{item}</a>)}
         </nav>
         <div className="head-actions">
           <button aria-label="Buscar"><SearchIcon /></button>
@@ -71,43 +81,64 @@ export default function Home() {
       </section>
 
       <nav className="topics" aria-label="Temas">
-        {['Gastronomía', 'Cultura', 'Lugares', 'Eventos', 'Barrios', 'Naturaleza', 'Vida nocturna'].map((item) => <a href="#" key={item}>{item}</a>)}
+        {pillars.map(([, item, , href]) => <a href={href} key={item}>{item}</a>)}
       </nav>
 
-      <section className="featured section reveal">
+      <section className="pillars section reveal" id="explora">
+        <div className="title-row"><div><p className="micro orange">NUESTRA FORMA DE MIRAR</p><h2>Cinco maneras de<br />entrar a La Paz</h2></div><p className="section-intro">No se trata de verlo todo.<br />Se trata de mirar mejor.</p></div>
+        <div className="pillar-grid">{pillars.map(([number, name, description, href]) => <a href={href} className="pillar-card" key={name}><span>{number}</span><h3>{name}</h3><p>{description}</p><b>Descubrir →</b></a>)}</div>
+      </section>
+
+      <section className="featured section reveal" id="descubre">
         <div className="featured-photo"><img src={IMG.street} alt="Vida cotidiana en una calle paceña" /></div>
         <article><p className="micro orange">HISTORIA DESTACADA · CULTURA</p><h2>El alma de La Paz está en sus calles</h2><p>Entre pendientes imposibles, mercados y conversaciones al paso, la ciudad se revela en una coreografía cotidiana que no aparece en las postales.</p><a className="simple-link" href="#">Leer historia <span>→</span></a></article>
       </section>
 
-      <section className="districts section reveal">
-        <div className="title-row"><div><p className="micro orange">ZONA POR ZONA</p><h2>Explora La Paz<br />por barrios</h2></div><p className="section-intro">Cada zona tiene una forma diferente<br />de vivir la ciudad.</p></div>
-        <div className="district-grid">{districts.map(([name, desc, image], index) => <a className={`district d${index + 1}`} href="#" key={name}><img src={image} alt={`Vista de ${name}`} /><span><strong>{name}</strong><small>{desc}</small></span></a>)}</div>
+      <section className="districts section reveal" id="barrios">
+        <div className="title-row"><div><p className="micro orange">MAPA EDITORIAL INTERACTIVO</p><h2>Explora La Paz<br />por zonas</h2></div><p className="section-intro">Elige una zona para descubrir<br />su ritmo, sus lugares y su carácter.</p></div>
+        <div className="map-layout">
+          <article className="zone-detail" aria-live="polite">
+            <div className="zone-photo"><img src={activeZone.image} alt={`Vista de ${activeZone.name}`} /></div>
+            <div className="zone-copy"><p className="micro orange">{activeZone.label}</p><h3>{activeZone.name}</h3><p>{activeZone.description}</p><div className="zone-highlights">{activeZone.highlights.map((place) => <span key={place}>{place}</span>)}</div><a className="simple-link" href="#lo-ultimo">Explorar esta zona <span>→</span></a></div>
+          </article>
+          <div className="city-map" role="group" aria-label="Zonas de La Paz">
+            <svg viewBox="0 0 520 620" aria-hidden="true"><path className="map-shape" d="M120 22C170 10 222 40 238 88c13 39-5 72 17 110 24 42 80 45 101 92 19 44-8 82 18 124 21 34 72 46 83 91 12 46-15 90-55 108-42 20-84-3-115-30-31-27-48-62-87-83-38-20-86-24-106-63-21-41 8-79 5-120-4-52-58-83-54-136 4-48 42-91 81-113 39-23 76-38 114-46Z" /><path className="map-road" d="M137 52C190 120 174 181 229 234s90 84 113 156 43 128 82 176" /><path className="map-road thin" d="M75 176c78 17 128 54 177 104s89 107 173 128" /><path className="map-road thin" d="M95 356c76-12 136 14 186 62s79 77 128 91" /></svg>
+            <div className="map-caption"><span>LA PAZ · 3.600 M</span><span>NORTE ↑</span></div>
+            {zones.map((zone) => <button className={zone.id === activeZone.id ? "map-pin active" : "map-pin"} style={{ left: `${zone.x}%`, top: `${zone.y}%` }} type="button" aria-pressed={zone.id === activeZone.id} onClick={() => setActiveZoneId(zone.id)} key={zone.id}><i /><span>{zone.shortName}</span></button>)}
+          </div>
+        </div>
+        <div className="zone-tabs" aria-label="Seleccionar zona">{zones.map((zone) => <button className={zone.id === activeZone.id ? "active" : ""} type="button" aria-pressed={zone.id === activeZone.id} onClick={() => setActiveZoneId(zone.id)} key={zone.id}>{zone.name}</button>)}</div>
       </section>
 
-      <section className="agenda section reveal">
+      <section className="agenda section reveal" id="conecta">
         <div className="agenda-heading"><p className="micro orange">AGENDA CULTURAL</p><h2>Esta semana<br />en La Paz</h2><a className="simple-link inverse" href="#">Ver agenda completa <span>→</span></a></div>
         <div className="event-list">
           {[['17', 'AGO', 'Festival de Música Independiente', 'Teatro Nuna · 19:30'], ['18', 'AGO', 'Feria gastronómica', 'Sopocachi · 11:00'], ['20', 'AGO', 'Exposición de fotografía', 'Museo Nacional de Arte · 18:30']].map(([day, month, title, place]) => <a href="#" className="event" key={title}><time><b>{day}</b><span>{month}</span></time><span><strong>{title}</strong><small>{place}</small></span><i>↗</i></a>)}
         </div>
       </section>
 
-      <section className="photo-story reveal">
+      <section className="photo-story reveal" id="pertenece">
         <img src={IMG.city} alt="Panorámica de La Paz al amanecer" />
-        <div><p className="micro">DESDE NUESTRA MIRADA · PHOTO ESSAY 01</p><h2>Una mañana sobre<br />los 3.600 metros.</h2><p>La primera luz toca los ladrillos y revela una ciudad suspendida entre la tierra y el cielo.</p><a className="simple-link inverse" href="#">Ver historia fotográfica <span>→</span></a></div>
+        <div><p className="micro">PERTENECE · RAÍCES & IDENTIDAD</p><h2>Hay ciudades a las que<br />uno siempre vuelve.</h2><p>Historias sobre memoria, distancia, diáspora y las muchas maneras de llamar hogar a Bolivia.</p><a className="simple-link inverse" href="#lo-ultimo">Leer historias <span>→</span></a></div>
       </section>
 
-      <section className="discover section reveal">
-        <div className="title-row"><div><p className="micro orange">RECOMENDACIONES LOCALES</p><h2>Más allá de lo turístico</h2></div></div>
+      <section className="discover section reveal" id="saborea">
+        <div className="title-row"><div><p className="micro orange">SABOREA · FOOD & CULTURE</p><h2>La ciudad también<br />se cuenta comiendo</h2></div><p className="section-intro">Sabores con contexto,<br />no listas de moda.</p></div>
         <div className="discover-grid">
-          {[["Mercados que vale la pena conocer", IMG.food], ["Miradores que pocos visitan", IMG.hills], ["Dónde escuchar música en vivo", IMG.cable]].map(([title, image], i) => <a href="#" key={title}><div><img src={image} alt="" /></div><p className="micro">0{i + 1}</p><h3>{title}</h3><span>Descubrir →</span></a>)}
+          {[["El ritual paceño de comer una salteña", IMG.food], ["Caseritas: la confianza que organiza un mercado", IMG.street], ["Cinco sabores para comenzar a entender La Paz", IMG.city]].map(([title, image], i) => <a href="#lo-ultimo" key={title}><div><img src={image} alt="" /></div><p className="micro">0{i + 1}</p><h3>{title}</h3><span>Descubrir →</span></a>)}
         </div>
       </section>
 
-      <section className="social section reveal"><div><p className="micro orange">LA PAZ, TODOS LOS DÍAS</p><h2>@howtolapaz</h2><p>Más historias de La Paz, todos los días.</p><a className="simple-link" href="#">Seguir en Instagram <span>↗</span></a></div><div className="social-grid">{[IMG.hero, IMG.street, IMG.food, IMG.cable].map((image) => <a href="#" key={image}><img src={image} alt="Fotografía de la comunidad How To La Paz" /></a>)}</div></section>
+      <section className="guide section reveal" id="vive">
+        <div className="guide-copy"><p className="micro orange">VIVE · EXPERIENCIA PILOTO</p><h2>La Guía Insider<br />Edición 01</h2><p>Una guía digital pequeña y personal con lugares, rutas y contexto: lo que compartiríamos con un amigo que llega a La Paz.</p><a className="orange-button" href="https://www.instagram.com/howtolapaz/" target="_blank" rel="noreferrer">Quiero enterarme <span>↗</span></a></div>
+        <div className="guide-card"><div className="guide-cover"><img src="/how-to-la-paz.png" alt="How To La Paz" /><p className="micro">GUÍA INSIDER · EDICIÓN PILOTO</p><strong>LA PAZ,<br />A TRAVÉS<br />DE NUESTROS<br />OJOS</strong></div><ol><li><b>01</b><span>Dónde empezar si es tu primera vez</span></li><li><b>02</b><span>Comer bien sin perseguir tendencias</span></li><li><b>03</b><span>Barrios para caminar con contexto</span></li><li><b>04</b><span>Mercados, miradores y hallazgos</span></li></ol></div>
+      </section>
 
-      <footer><div className="footer-main"><img src="/how-to-la-paz.png" alt="How To La Paz" /><p>Una forma diferente de<br />descubrir la ciudad.</p><nav>{['Explora', 'Noticias', 'Agenda', 'Barrios', 'Sobre nosotros', 'Contacto'].map((item) => <a href="#" key={item}>{item}</a>)}</nav><nav>{['Instagram ↗', 'Facebook ↗', 'TikTok ↗'].map((item) => <a href="#" key={item}>{item}</a>)}</nav></div><div className="footer-line"><span>© 2026 HOW TO LA PAZ</span><span>HECHO A 3.600 M</span><a href="#inicio">VOLVER ARRIBA ↑</a></div></footer>
+      <section className="social section reveal"><div><p className="micro orange">LA PAZ, TODOS LOS DÍAS</p><h2>@howtolapaz</h2><p>Más historias de La Paz, todos los días.</p><a className="simple-link" href="https://www.instagram.com/howtolapaz/" target="_blank" rel="noreferrer">Seguir en Instagram <span>↗</span></a></div><div className="social-grid">{[IMG.hero, IMG.street, IMG.food, IMG.cable].map((image) => <a href="https://www.instagram.com/howtolapaz/" target="_blank" rel="noreferrer" key={image}><img src={image} alt="Fotografía de la comunidad How To La Paz" /></a>)}</div></section>
 
-      <nav className="mobile-tabs" aria-label="Navegación móvil"><a className="active" href="#inicio"><b>⌂</b>Inicio</a><a href="#lo-ultimo"><b>⌕</b>Explora</a><a href="#"><b>□</b>Eventos</a><a href="#"><b>◇</b>Guía</a><a href="#"><b>♡</b>Favoritos</a></nav>
+      <footer><div className="footer-main"><img src="/how-to-la-paz.png" alt="How To La Paz" /><p>Una forma diferente de<br />descubrir la ciudad.</p><nav>{pillars.map(([, item, , href]) => <a href={href} key={item}>{item}</a>)}</nav><nav><a href="https://www.instagram.com/howtolapaz/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="#vive">Guía Insider</a><a href="#inicio">Sobre nosotros</a></nav></div><div className="footer-line"><span>© 2026 HOW TO LA PAZ</span><span>HECHO A 3.600 M</span><a href="#inicio">VOLVER ARRIBA ↑</a></div></footer>
+
+      <nav className="mobile-tabs" aria-label="Navegación móvil"><a className="active" href="#inicio"><b>⌂</b>Inicio</a><a href="#explora"><b>⌕</b>Explora</a><a href="#conecta"><b>□</b>Eventos</a><a href="#vive"><b>◇</b>Guía</a><a href="https://www.instagram.com/howtolapaz/" target="_blank" rel="noreferrer"><b>♡</b>Comunidad</a></nav>
     </main>
   );
 }
